@@ -1,0 +1,20 @@
+paths:
+  station_monthly: data/example/station_monthly_synthetic.csv
+  governance: data/example/governance_synthetic.csv
+  province_covariates: data/example/province_covariates_synthetic.csv
+  results: results
+analysis:
+  start_year: 2006
+  end_year: 2024
+  sigma_threshold: 3.0
+  interpolate_single_month_gap: true
+  min_months_per_station_year: 6
+  bootstrap_s3: 200
+  bootstrap_s4: 1000
+  bootstrap_cp_model: 5
+  bootstrap_governance: 5
+  seed: 20260924
+  cp_bin_cod: 2.0
+  cp_bin_tp: 0.025
+  cp_bin_min_n: 15
+  periods: [[2007, 2010], [2011, 2015], [2016, 2020], [2021, 2024]]

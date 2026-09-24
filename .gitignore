@@ -1,0 +1,11 @@
+config.manuscript.yml
+data/raw/
+data/restricted/
+results_manuscript/
+*.opju
+*.aprx
+*.mxd
+.venv/
+__pycache__/
+*.pyc
+.DS_Store

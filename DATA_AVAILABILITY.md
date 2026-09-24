@@ -1,0 +1,4 @@
+# Draft Data availability statement
+
+Monthly surface-water monitoring records were obtained from China’s National Environmental Monitoring Network through the Ministry of Ecology and Environment of China. These records are subject to provider and data-use restrictions and therefore cannot be redistributed publicly by the authors. Data requests should be directed to the original data provider and remain subject to its authorization and applicable policies. Provincial variables and gridded covariates were obtained from the sources cited in the Methods under their respective terms. Source Data underlying the figures and tables are provided with the article. Complete analysis code and a synthetic dataset demonstrating the computational workflow are available in the accompanying repository. The synthetic dataset is not observational data and does not reproduce the numerical estimates reported in the manuscript.
+
