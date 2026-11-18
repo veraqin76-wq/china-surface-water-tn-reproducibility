@@ -10,5 +10,5 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: python run_all.py --mode demo --skip-r
-      - run: python validation/validate_outputs.py --mode demo
+      - run: python validation/validate_outputs.py --mode demo --skip-r
 
