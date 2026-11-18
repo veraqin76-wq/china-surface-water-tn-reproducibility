@@ -1,0 +1,12 @@
+figure_or_table,file,generating_script,method
+Fig1a,01_trends/source_data/S1_S3_ratios_with_intervals.csv,05_ratio_uncertainty.py,Ratio definitions and station bootstrap
+Fig1b-l;FigS6,01_trends/source_data/S3_temporal_GAM_derivatives.csv,r/01_temporal_gam.R,Temporal GAM derivatives
+Fig2;FigS24,02_cp/source_data/Fig2_S24_CP_surfaces.csv,r/02_cp_surfaces.R,Supported GAM surfaces
+Fig3;TableS13,03_governance/tables/S13_2024_governance_effects.csv,r/03_governance_2024.R,LN and RAW counterfactual contrasts
+FigS7-S8,01_trends/source_data/S7_S8_paired_improvement.csv,04_supplementary_exports.py,Paired annual log improvement
+FigS9;FigS11;FigS13,02_cp/source_data/S9_S11_S13_state_statistics.csv,04_supplementary_exports.py,Empirical state responses and occupancy
+FigS10,02_cp/source_data/S4_national_2D_bins.csv,02_cp_empirical_analysis.py,Period-specific two-dimensional empirical bins
+FigS12,02_cp/source_data/S4_basin_2D_bins.csv,02_cp_empirical_analysis.py,Basin two-dimensional empirical bins
+TableS8,02_cp/tables/S8_counterfactual_predictions.csv,r/02_cp_tensor_gam.R; r/02_cp_cluster_bootstrap.R,P20 and P80 standardized model scenarios
+TableS10,02_cp/tables/S10_transition_positions.csv,r/02_cp_surfaces.R,Minimum coordinates on supported zero contour
+TableS12,03_governance/tables/S12_governance_model_comparison.csv,r/03_governance_2024.R; r/03_governance_robustness.R,LN and RAW fits and cross-validation

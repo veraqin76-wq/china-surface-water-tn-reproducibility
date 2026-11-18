@@ -1,0 +1,28 @@
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 00_generate_synthetic_data.py
+Synthetic files written to /tmp/ns-final/NS_full_reproduction/data/example
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 01_station_trends_and_stoichiometry.py
+01 complete: /tmp/ns-final/NS_full_reproduction/results/01_trends
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 02_cp_empirical_analysis.py
+COD–TP climate complete cases: 2401 of 2401
+02 empirical complete: /tmp/ns-final/NS_full_reproduction/results/02_cp
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 03_governance_analysis.py
+03 trends complete: /tmp/ns-final/NS_full_reproduction/results/03_governance
+RUN: Rscript r/01_temporal_gam.R /tmp/ns-final/NS_full_reproduction/results/01_trends
+RUN: Rscript r/02_cp_tensor_gam.R /tmp/ns-final/NS_full_reproduction/results/02_cp/model_data/cp_model_panel.csv /tmp/ns-final/NS_full_reproduction/results/02_cp
+CP GAM complete
+RUN: Rscript r/02_cp_cross_validation.R /tmp/ns-final/NS_full_reproduction/results/02_cp/model_data/cp_model_panel.csv /tmp/ns-final/NS_full_reproduction/results/02_cp/tables/S5_blocked_CV.csv
+Blocked CV complete
+RUN: Rscript r/02_cp_robustness.R /tmp/ns-final/NS_full_reproduction/results/02_cp/model_data/cp_model_panel.csv /tmp/ns-final/NS_full_reproduction/results/02_cp
+CP robustness complete
+RUN: Rscript r/03_governance_gam.R /tmp/ns-final/NS_full_reproduction/results/03_governance/model_data/province_year_panel.csv /tmp/ns-final/NS_full_reproduction/results/03_governance
+Governance GAM complete
+RUN: Rscript r/03_governance_robustness.R /tmp/ns-final/NS_full_reproduction/results/03_governance/model_data/province_year_panel.csv /tmp/ns-final/NS_full_reproduction/results/03_governance
+RUN: Rscript r/02_cp_cluster_bootstrap.R /tmp/ns-final/NS_full_reproduction/results/02_cp/model_data/cp_model_panel.csv /tmp/ns-final/NS_full_reproduction/results/02_cp 5 20260924
+CP cluster bootstrap complete
+RUN: Rscript r/03_governance_2024.R /tmp/ns-final/NS_full_reproduction/results/03_governance/model_data/province_year_panel.csv /tmp/ns-final/NS_full_reproduction/results/03_governance 5 20260924
+RUN: Rscript r/02_cp_surfaces.R /tmp/ns-final/NS_full_reproduction/results/02_cp/model_data/cp_model_panel.csv /tmp/ns-final/NS_full_reproduction/results/02_cp
+RUN: Rscript r/04_governance_sensitivity.R /tmp/ns-final/NS_full_reproduction/results/03_governance/model_data/province_year_panel.csv /tmp/ns-final/NS_full_reproduction/results/03_governance /tmp/ns-final/NS_full_reproduction/results/01_trends/model_data/station_annual.csv
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 04_supplementary_exports.py
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 05_ratio_uncertainty.py
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 06_context_exports.py
+RUN: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python 07_render_figures.py

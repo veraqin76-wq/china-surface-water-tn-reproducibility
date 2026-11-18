@@ -31,7 +31,10 @@ def main():
     cats=list(cat.columns); tests=[{"test":"Friedman","statistic":friedmanchisquare(*[cat[c] for c in cats]).statistic,"p":friedmanchisquare(*[cat[c] for c in cats]).pvalue}]
     for a,b in itertools.combinations(cats,2):
         q=wilcoxon(cat[a],cat[b]); tests.append({"test":f"Wilcoxon_{a}_vs_{b}","statistic":q.statistic,"p":q.pvalue})
-    tt=pd.DataFrame(tests); tt.loc[tt.test.str.startswith("Wilcoxon"),"p_Holm"]=np.minimum(1,tt.loc[tt.test.str.startswith("Wilcoxon"),"p"].sort_values().values*np.arange(3,0,-1))
+    tt=pd.DataFrame(tests); indices = tt.index[tt.test.str.startswith("Wilcoxon")]
+    ordered = tt.loc[indices, "p"].sort_values()
+    adjusted = np.minimum(1, np.maximum.accumulate(ordered.to_numpy() * np.arange(len(ordered), 0, -1)))
+    tt.loc[ordered.index, "p_Holm"] = adjusted
     tt.to_csv(base/"tables/S6_category_tests.csv",index=False); tr.to_csv(base/"source_data/S6_province_points.csv",index=False)
     print(f"03 trends complete: {base}")
 if __name__=="__main__": main()

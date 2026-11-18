@@ -9,8 +9,8 @@ analysis:
   sigma_threshold: 3.0
   interpolate_single_month_gap: true
   min_months_per_station_year: 6
-  bootstrap_s3: 200
-  bootstrap_s4: 1000
+  bootstrap_s3: 20
+  bootstrap_s4: 30
   bootstrap_cp_model: 5
   bootstrap_governance: 5
   seed: 20260924

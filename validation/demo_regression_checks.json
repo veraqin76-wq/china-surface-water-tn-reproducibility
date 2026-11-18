@@ -1,0 +1,17 @@
+{
+  "paired_difference_sign": "passed",
+  "median_state_boundary_includes_equality": "passed",
+  "minimal_metadata_and_duplicate_station_month": "passed",
+  "configured_grade_proportions_sum_to_100": "passed",
+  "investment_NEEP_equals_LEEP_plus_CEEP": "passed",
+  "LN_RAW_original_scale_CV_coverage": "passed",
+  "counterfactual_decrease_sign": "passed",
+  "python": "3.12.14",
+  "pdf_analysis_plots": 21,
+  "demo_bootstrap_counts": {
+    "paired_and_ratios": 20,
+    "empirical_states": 30,
+    "CP_models": 5,
+    "governance_models": 5
+  }
+}

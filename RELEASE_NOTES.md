@@ -1,13 +1,5 @@
-# Release notes
+# Version 1.1
 
-## Version 1.0.1 — 2026-09-24
+This release includes preprocessing, temporal trends, stoichiometric ratios, empirical COD–TP states, national and basin GAMs, model validation, management scenarios and statistical source tables.
 
-- Confirmed successful execution of both the Python and R synthetic-data demonstration workflows.
-- Clarified the distinction between workflow execution and numerical reproduction of restricted-data estimates.
-- Documented reduced demo bootstrap counts and full manuscript bootstrap requirements.
-- Added explicit pre-submission checks for diagnostics, Source Data, environment capture and repository placeholders.
-- Retained separate `demo` and `manuscript` modes to prevent synthetic outputs from being mistaken for manuscript results.
-
-## Version 1.0.0
-
-- Initial integrated Python/R reproducibility package.
+FIGURE_TABLE_CODE_MAP.md lists the scripts, methods and outputs for the manuscript figures and tables. README.md gives installation and execution commands. Validation records are provided in validation/.

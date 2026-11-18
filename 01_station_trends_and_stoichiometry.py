@@ -15,13 +15,24 @@ def preprocess(cfg):
     raw=standardize_columns(read_table(ROOT/cfg["paths"]["station_monthly"]),"station")
     ensure_columns(raw,["StationID","Basin","Province","Year","Month"]+POLLUTANTS,"station data")
     nums=POLLUTANTS+[c for c in ["DO","WaterTemp","Flu","Longitude","Latitude","Year","Month"] if c in raw]
-    for c in nums: raw[c]=pd.to_numeric(raw[c],errors="coerce")
+    for c in nums: raw[c]=pd.to_numeric(raw[c],errors="coerce").replace([np.inf, -np.inf], np.nan)
     raw=raw.query("Year >= @cfg['analysis']['start_year'] and Year <= @cfg['analysis']['end_year']").copy()
     dup=raw.duplicated(["StationID","Year","Month"],keep=False)
     audit={"raw_rows":len(raw),"duplicate_station_month_rows":int(dup.sum())}
     if dup.any():
         meta=[c for c in META if c in raw]
-        raw=raw.groupby(meta+["Year","Month"],dropna=False,as_index=False)[[c for c in nums if c not in ["Year","Month","Longitude","Latitude"]]].mean()
+        keys = ["StationID", "Year", "Month"]
+        aggregation = {column: "first" for column in meta if column not in keys}
+        aggregation.update({column: "mean" for column in nums
+                            if column not in keys + ["Longitude", "Latitude"]})
+        raw = raw.groupby(keys, dropna=False, as_index=False).agg(aggregation)
+    calendar = []
+    for (_, _), group in raw.groupby(["StationID", "Year"], sort=False):
+        group = group.set_index("Month").reindex(range(1, 13))
+        for field in [c for c in META + ["Year"] if c in group]:
+            group[field] = group[field].ffill().bfill()
+        calendar.append(group.rename_axis("Month").reset_index())
+    raw = pd.concat(calendar, ignore_index=True)
     flagged=[]
     for c in [x for x in POLLUTANTS+["DO","WaterTemp","Flu"] if x in raw]:
         raw.loc[raw[c]<=0 if c in POLLUTANTS+["Flu"] else pd.Series(False,index=raw.index),c]=np.nan
@@ -32,7 +43,11 @@ def preprocess(cfg):
         raw.loc[bad,c]=np.nan
         if cfg["analysis"]["interpolate_single_month_gap"]:
             raw=raw.sort_values(["StationID","Year","Month"])
-            raw[c]=raw.groupby(["StationID","Year"],group_keys=False)[c].apply(lambda s:s.interpolate(limit=1,limit_area="inside"))
+            def isolated_gap(series):
+                interpolated = series.interpolate(limit_area="inside")
+                isolated = series.isna() & series.shift().notna() & series.shift(-1).notna()
+                return series.where(~isolated, interpolated)
+            raw[c]=raw.groupby(["StationID","Year"],group_keys=False)[c].transform(isolated_gap)
     valcols=[c for c in POLLUTANTS+["DO","WaterTemp","Flu"] if c in raw]
     meta=[c for c in META if c in raw]
     counts=raw.groupby(["StationID","Year"])[valcols].count().add_suffix("_n_month")
@@ -62,7 +77,14 @@ def trends(annual):
         iterator=[("China",annual)] if not groups else annual.groupby(groups[0])
         for area,g in iterator:
             yy=g.groupby("Year")[POLLUTANTS].mean().reset_index()
-            for p in POLLUTANTS: series.append({"Scope":scope,"Area":area,"Pollutant":p}|mk_sen(yy.Year,yy[p]))
+            for p in POLLUTANTS:
+                selected = yy.loc[yy.Year.ge(2007)] if scope == "Basin" and area == "SeR" and p == "COD" else yy
+                result = mk_sen(selected.Year, selected[p])
+                mean = selected[p].mean()
+                result.update(relative_sen_pct_yr=100 * result["sen"] / mean,
+                              relative_lo=100 * result["lo"] / mean,
+                              relative_hi=100 * result["hi"] / mean)
+                series.append({"Scope":scope,"Area":area,"Pollutant":p}|result)
     out=pd.DataFrame(series); out["p_BH"]=bh_adjust(out.p); return out
 
 def paired_change(annual, nboot, seed):
@@ -72,9 +94,9 @@ def paired_change(annual, nboot, seed):
         a[p+"_improve"]=np.where((a.Year-a[p+"_lag_year"]==1)&(a[p]>0)&(a[p+"_lag"]>0),np.log(a[p+"_lag"]/a[p]),np.nan)
     rows=[]
     for q in ["COD","TP","NH3N"]:
-        a["diff"]=a["TN_improve"]-a[q+"_improve"]
+        a["diff"]=a[q+"_improve"]-a["TN_improve"]
         for (year,basin),g in a.groupby(["Year","Basin"]):
-            z=g.dropna(subset=["diff"]); rows.append({"Year":year,"Basin":basin,"Comparator":q,"n":len(z),"mean":z["diff"].mean(),"median":z["diff"].median(),"prop_lt0":(z["diff"]<0).mean()})
+            z=g.dropna(subset=["diff"]); rows.append({"Year":year,"Basin":basin,"Comparator":q,"n":len(z),"mean":z["diff"].mean(),"median":z["diff"].median(),"prop_slower":(z["diff"]>0).mean()})
     return pd.DataFrame(rows)
 
 def log_decomposition(annual):
@@ -108,16 +130,20 @@ def main():
     raw.to_csv(base/"model_data/station_monthly_clean.csv",index=False); annual.to_csv(base/"model_data/station_annual.csv",index=False)
     flags.to_csv(base/"audit/outliers_3sigma.csv",index=False); pd.DataFrame([audit]).to_csv(base/"audit/data_quality_summary.csv",index=False)
     allr=ratios_for_group(annual,["Year"]).assign(Sample="all")
-    balanced_ids=annual.groupby("StationID").Year.nunique(); balanced_ids=balanced_ids[balanced_ids==cfg["analysis"]["end_year"]-cfg["analysis"]["start_year"]+1].index
+    balanced_ids = [identifier for identifier, group in annual.groupby("StationID")
+                    if group.Year.nunique() == cfg["analysis"]["end_year"] - cfg["analysis"]["start_year"] + 1
+                    and group[["COD", "TN", "TP"]].gt(0).all(axis=None)]
     bal=ratios_for_group(annual[annual.StationID.isin(balanced_ids)],["Year"]).assign(Sample="balanced")
     rr=pd.concat([allr,bal,equal_weight_ratios(annual,"Basin"),equal_weight_ratios(annual,"Province")],ignore_index=True)
     rr.to_csv(base/"source_data/stoichiometric_ratios_R1_R2_R3.csv",index=False)
     trend=trends(annual); trend.to_csv(base/"tables/mk_sen_pollutants.csv",index=False)
     log_decomposition(annual).to_csv(base/"tables/stoichiometric_log_decomposition.csv",index=False)
-    temporal_smooth_derivative(annual).to_csv(base/"source_data/S3_temporal_GAM_derivatives.csv",index=False)
+    temporal_smooth_derivative(annual).to_csv(base/"source_data/S3_python_spline_derivatives.csv",index=False)
     paired=paired_change(annual,cfg["analysis"]["bootstrap_s3"],cfg["analysis"]["seed"]); paired.to_csv(base/"source_data/within_station_TN_lag.csv",index=False)
     annual.groupby("Year")[POLLUTANTS].mean().reset_index().to_csv(base/"source_data/national_annual_means.csv",index=False)
     annual.groupby(["Basin","Year"])[POLLUTANTS].mean().reset_index().to_csv(base/"source_data/basin_annual_means.csv",index=False)
-    annual.groupby("StationID",as_index=False).agg({"StationName":"first","Basin":"first","Province":"first","Longitude":"first","Latitude":"first",**{p:"mean" for p in POLLUTANTS}}).to_csv(base/"arcgis_join_tables/station_long_term_means.csv",index=False)
+    annual.groupby("StationID",as_index=False).agg({
+        **{column: "first" for column in ["StationName", "Basin", "Province", "Longitude", "Latitude"] if column in annual},
+        **{p:"mean" for p in POLLUTANTS}}).to_csv(base/"arcgis_join_tables/station_long_term_means.csv",index=False)
     print(f"01 complete: {base}")
 if __name__=="__main__": main()

@@ -1,82 +1,46 @@
 # Stoichiometric restructuring and total-nitrogen dynamics in Chinese surface waters
 
-Reproducible workflow accompanying the manuscript. The repository separates **workflow reproducibility** from **numerical reproducibility** because the underlying National Environmental Monitoring Network records are subject to redistribution restrictions.
+Python and R scripts for the study's preprocessing, stoichiometric analyses, pollutant trends, empirical COD–TP states, tensor-product GAMs and governance analyses. The included synthetic records demonstrate execution. Manuscript mode reads the authorized local study inputs.
 
-## Release status
-
-Version 1.0.1 is the submission-oriented public release. The Python demonstration workflow and the independent R/`mgcv` demonstration workflow have both been confirmed to complete successfully using the included synthetic inputs. The demonstration verifies executable implementation and output generation; it does not reproduce manuscript numerical estimates.
-
-## Reproducibility modes
-
-```bash
-python run_all.py --mode demo
-python run_all.py --mode manuscript --config config.manuscript.yml
-```
-
-- `demo` generates an explicitly synthetic dataset and runs the full public workflow. Its numerical values are not manuscript results.
-- `manuscript` reads authorized analysis data from user-supplied paths and produces manuscript tables, Source Data and diagnostics.
-
-The synthetic data are provided solely to demonstrate the computational workflow. They must not be cited as observations or used to verify manuscript effect sizes.
-
-## Software responsibility
-
-| Component | Software | Purpose |
-|---|---|---|
-| Cleaning, aggregation, ratios, trend tests, empirical states | Python | Statistical analysis and audit tables |
-| Tensor-product and governance GAMs | R `mgcv` | Penalized smooths, random effects, REML and diagnostics |
-| Statistical figures | Python or Origin | Origin reads immutable CSV Source Data; it performs no estimation |
-| Spatial maps | ArcGIS 10.5 | Joins exported section summaries and draws maps; it performs no trend/GAM estimation |
-
-## Key files
-
-| Path | Description |
-|---|---|
-| `00_generate_synthetic_data.py` | Creates non-confidential demonstration inputs |
-| `01_station_trends_and_stoichiometry.py` | S1–S3 cleaning, annualization, stoichiometry and trends |
-| `02_cp_empirical_analysis.py` | S4 lag matching, four states, bins and cluster bootstrap |
-| `03_governance_analysis.py` | S6 governance trends and non-parametric comparisons |
-| `r/02_cp_tensor_gam.R` | Main COD–TP GAM, M0–M2, diagnostics and predictions |
-| `r/02_cp_cross_validation.R` | Within-site contiguous time-block CV |
-| `r/02_cp_robustness.R` | Site holdout, rolling extrapolation and basin models |
-| `r/03_governance_gam.R` | Provincial governance GAM and counterfactuals |
-| `r/03_governance_robustness.R` | Blocked-year CV and lag sensitivity |
-| `validation/validate_outputs.py` | Completion and sanity checks |
-| `DATA_DICTIONARY.md` | Fields, units and aggregation rules |
-| `METHODS_CODE_MAP.md` | Method-to-code crosswalk |
-
-## Installation and execution
+## Installation
 
 Python 3.11+ and R 4.3+ are recommended.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 Rscript environment/install_R_packages.R
+```
+
+## Run
+
+```bash
 python run_all.py --mode demo
 python validation/validate_outputs.py --mode demo
 ```
 
-Every run writes a log and a SHA-256 output manifest. Random seeds and bootstrap counts are controlled in YAML.
+For the study inputs, copy `config.manuscript.example.yml` to `config.manuscript.yml`, enter local input paths and run:
 
-For a rapid installation check, the demo configuration uses reduced model-bootstrap counts. Submission analyses must use the counts in `config.manuscript.example.yml`: 200 station-cluster replicates for the COD–TP model, 500 region-stratified province-cluster replicates for governance models, and 1,000 section-cluster replicates for the empirical state analysis.
+```bash
+python run_all.py --mode manuscript --config config.manuscript.yml
+python validation/validate_outputs.py --mode manuscript --config config.manuscript.yml
+```
 
-## Restricted data
+The manuscript configuration uses 1,000 empirical station-cluster replicates, 200 COD–TP model replicates and 500 region-stratified province-cluster replicates for governance. The demonstration configuration uses reduced counts.
 
-Do not commit `config.manuscript.yml`, raw monitoring data, provider credentials or identifiable site metadata. Manuscript mode requires only variables used in this study; unrelated variables for unpublished studies should be omitted.
+The COD–TP climate input has one row per `StationID, Year`, with `AirTemperature` and `Precipitation` on the TN response year. The governance climate input uses `Temperature` for air temperature. Field names and units are described in `DATA_DICTIONARY.md`.
 
-## Before journal submission
+## Figure and table outputs
 
-1. Copy `config.manuscript.example.yml` to the ignored file `config.manuscript.yml` and enter authorized local data paths.
-2. Run manuscript mode with the full bootstrap counts.
-3. Inspect GAM basis-dimension diagnostics, concurvity and all cross-validation tables.
-4. Populate `source_data/` only with approved manuscript-mode values.
-5. Replace the GitHub and Zenodo placeholders in the availability statements and `CITATION.cff`.
-6. Archive the final run log, R session information and output manifest with the release.
+`FIGURE_TABLE_CODE_MAP.md` lists the scripts, methods and CSV outputs corresponding to each main and supplementary figure/table. `07_render_figures.py` draws analysis plots. CSV spatial layers are supplied for ArcGIS layout.
 
-## Conventions
+Supplementary inputs are configured as follows.
 
-- `r_TN = log(TN_t / TN_t-1)`: negative values indicate declining TN.
-- `TN_improvement = log(TN_t-1 / TN_t)`: positive values indicate improvement.
-- S4 median states and S5 20th/80th-percentile prediction states are not interchangeable.
-- COD is an organic-matter-related water-quality measure, not directly measured elemental carbon.
+- Fig. S20 reads five Grade I–V limits per pollutant from `water_quality_thresholds`.
+- Fig. S27 reads `paths.investment`, containing `Year, LEEP, CEEP, Grey, Green` in RMB 100 million.
+- Maps use the exported station tables and the study's geographic boundary layers.
+
+Logs and SHA-256 output manifests are written to the configured results directory. The underlying monitoring records are subject to redistribution restrictions. Public inputs in `data/example/` are synthetic.
+
+## Demonstration validation
+
+The complete Python and R demonstration completed successfully with the reduced bootstrap counts in config.yml. Validation covered all ten basin models, 25 COD–TP cross-validation fits, LN/RAW governance outputs and 21 PDF analysis plots. Run and validation records are included in validation/.

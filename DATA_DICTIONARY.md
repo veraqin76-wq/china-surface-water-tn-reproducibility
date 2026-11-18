@@ -17,7 +17,7 @@ One row is one section in one month. Chinese headings are standardized automatic
 | `Longitude`, `Latitude` | 经度, 纬度 | decimal degrees | maps only | ArcGIS join |
 | `Year`, `Month` | 年, 月 | integer | yes | Time keys |
 | `COD`, `NH3N`, `TN`, `TP`, `DO` | corresponding heading | mg L-1 | yes except optional controls | Water quality |
-| `WaterTemp` | Watertem | degrees C | COD–TP GAM | Lagged control |
+| `WaterTemp` | Watertem | degrees C | optional | Recorded water temperature |
 | `Flu` | flu | documented source unit | sensitivity | Hydrological control |
 
 Non-positive TN/COD/TP values are invalid for log ratios. Duplicate section–month records are recorded before averaging. Annual means require the configured minimum valid months separately for each variable.
@@ -41,3 +41,19 @@ Non-positive TN/COD/TP values are invalid for log ratios. Duplicate section–mo
 
 Yearbook accounting-scope changes must be documented and harmonized before concatenation.
 
+
+## Station-year climate input for the COD–TP models
+
+| Column | Definition |
+|---|---|
+| StationID | Station identifier matching the water-quality panel |
+| Year | TN response year |
+| AirTemperature | Annual air temperature in degrees Celsius |
+| Precipitation | Annual precipitation in millimetres |
+
+Provide a single row per station-year, with the climate extraction and
+aggregation used in the manuscript. The template contains column names only.
+
+## Supplementary inputs
+
+Investment fields are Year, LEEP, CEEP, Grey and Green, in RMB 100 million. The national series sum input rows by year. Configure the input through paths.investment. Water-quality grade exports read five ordered I–V limits for each of COD, NH3N and TP from water_quality_thresholds.

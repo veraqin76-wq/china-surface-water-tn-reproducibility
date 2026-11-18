@@ -1,0 +1,15 @@
+name: ns-water-repro
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - r-base=4.3
+  - r-mgcv
+  - r-data.table
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - openpyxl
+  - pyyaml

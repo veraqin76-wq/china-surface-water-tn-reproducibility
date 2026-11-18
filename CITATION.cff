@@ -4,8 +4,8 @@ title: "Reproducible workflow for Chinese surface-water stoichiometry and TN dyn
 type: software
 authors:
   - family-names: "Qin"
-    given-names: "Vera"
-version: 1.0.1
-date-released: 2026-09-24
+    given-names: "Lu"
+version: 1.1.0
+date-released: 2026-11-19
 license: MIT
-repository-code: "https://github.com/REPLACE_WITH_REPOSITORY"
+repository-code: "https://github.com/veraqin76-wq/china-surface-water-tn-reproducibility"

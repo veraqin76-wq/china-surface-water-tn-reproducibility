@@ -1,0 +1,77 @@
+{
+  "mode": "demo",
+  "checks": {
+    "annual": {
+      "rows": 2581,
+      "columns": 25,
+      "all_missing_columns": []
+    },
+    "ratios": {
+      "rows": 228,
+      "columns": 7,
+      "all_missing_columns": []
+    },
+    "trends": {
+      "rows": 44,
+      "columns": 13,
+      "all_missing_columns": []
+    },
+    "derivatives": {
+      "rows": 836,
+      "columns": 9,
+      "all_missing_columns": []
+    },
+    "paired": {
+      "rows": 594,
+      "columns": 14,
+      "all_missing_columns": []
+    },
+    "state_periods": {
+      "rows": 696,
+      "columns": 16,
+      "all_missing_columns": []
+    },
+    "cp_panel": {
+      "rows": 2401,
+      "columns": 43,
+      "all_missing_columns": []
+    },
+    "states": {
+      "rows": 51,
+      "columns": 11,
+      "all_missing_columns": []
+    },
+    "bins": {
+      "rows": 44,
+      "columns": 6,
+      "all_missing_columns": []
+    },
+    "governance": {
+      "rows": 589,
+      "columns": 22,
+      "all_missing_columns": []
+    },
+    "sen_governance": {
+      "rows": 248,
+      "columns": 12,
+      "all_missing_columns": []
+    },
+    "surface": {
+      "rows": 110000,
+      "columns": 18,
+      "all_missing_columns": []
+    },
+    "governance_2024": {
+      "rows": 512,
+      "columns": 14,
+      "all_missing_columns": []
+    }
+  },
+  "model_checks": {
+    "basins": 10,
+    "cp_CV_fits": 25,
+    "supported_S8_scenarios": 2,
+    "governance_estimates": 512
+  },
+  "errors": []
+}

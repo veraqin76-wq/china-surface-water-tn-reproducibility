@@ -1,4 +1,3 @@
-# Draft Code availability statement
+# Code availability
 
-Code for preprocessing, statistical analysis, robustness checks and Source Data generation is available at **[GitHub URL]**, with an archived release at **[Zenodo DOI]**. Python and R environment specifications, random seeds, configuration templates and a synthetic demonstration dataset are included. The public demonstration reproduces the computational workflow but not the manuscript’s numerical estimates because the underlying monitoring records cannot be redistributed.
-
+Code implementing the data preprocessing, statistical analyses, robustness checks and Source Data workflow described in this study is available at https://github.com/veraqin76-wq/china-surface-water-tn-reproducibility. Python and R environment specifications, configuration templates, random seeds and a figure/table-to-script index are included. Synthetic data demonstrate the computational workflow. Manuscript mode reads authorized local analysis data, as the underlying monitoring records are subject to redistribution restrictions.

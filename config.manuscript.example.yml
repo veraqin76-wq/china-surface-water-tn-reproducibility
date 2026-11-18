@@ -1,5 +1,6 @@
 paths:
   station_monthly: /ABSOLUTE/RESTRICTED/PATH/station_monthly.xlsx
+  station_year_climate: /ABSOLUTE/RESTRICTED/PATH/station_year_climate.csv
   governance: /ABSOLUTE/RESTRICTED/PATH/governance.xlsx
   province_covariates: /ABSOLUTE/RESTRICTED/PATH/province_covariates.xlsx
   results: results_manuscript
@@ -19,3 +20,11 @@ analysis:
   cp_bin_min_n: 15
   periods: [[2007, 2010], [2011, 2015], [2016, 2020], [2021, 2024]]
 
+# Optional S27 input in RMB 100 million, with Year, LEEP, CEEP, Grey and Green.
+# Add investment under paths above.
+# Set five Grade I–V limits for COD, NH3N and TP to export Fig. S20.
+# Use the TP classification appropriate to the study's waterbody type.
+# water_quality_thresholds:
+#   COD: [...]
+#   NH3N: [...]
+#   TP: [...]
