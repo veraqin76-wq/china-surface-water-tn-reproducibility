@@ -44,3 +44,25 @@ Logs and SHA-256 output manifests are written to the configured results director
 ## Demonstration validation
 
 The complete Python and R demonstration completed successfully with the reduced bootstrap counts in config.yml. Validation covered all ten basin models, 25 COD–TP cross-validation fits, LN/RAW governance outputs and 21 PDF analysis plots. Run and validation records are included in validation/.
+
+## System requirements and execution time
+
+### Software and tested environment
+
+The reference demonstration was tested on Debian GNU/Linux 13 using Python 3.12.14, R 4.5.0 and mgcv 1.9-3.
+
+Python dependencies and minimum versions are listed in requirements.txt. R packages include mgcv, data.table, MASS and jsonlite. Installation commands are provided above, and R session information is recorded in validation/R_sessionInfo.txt.
+
+### Hardware
+
+A standard CPU-based desktop computer is sufficient. No GPU or other non-standard hardware is required.
+
+### Installation time
+
+With Python and R already installed, dependency installation is estimated to take approximately 5–15 minutes, depending on network speed and package availability.
+
+### Demonstration runtime and output
+
+The complete Python and R demonstration is estimated to take approximately 15–30 minutes using the reduced bootstrap counts in config.yml. Runtime varies with hardware and software configuration. Manuscript-mode runs use larger bootstrap counts and take longer.
+
+Expected outputs include statistical tables, GAM model files, prediction surfaces, diagnostics, analysis plots, run logs and SHA-256 output manifests. Outputs are written to the configured results directory.
